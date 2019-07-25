@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="style.css">
+        <title>Metal Maelstrom</title>
+    </head>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+<style> circle {fill: lightblue; stroke: black;} </style>
+<title>Working Title</title>
+<body onload='init()'>
+    
+    <div class="container">
+        <h1>Metal Music</h1>
+        <small>Dataset found on <a target="_blank" href="https://www.kaggle.com/mrpantherson/metal-by-nation/">Kaggle</a></small>
+        
+        <p>This dataset will explore a metal music data set....</p>
+    
+
+        <svg width=300 height=300> </svg>
+    
+
+
+
+<script>
+async function init() {
+
+    var data = await d3.csv("data/page1.csv")
+    
+    console.log(data)
+}
+</script>
+
+  <div class="pageFooter">
+    <ul class="nav">
+      <li class="nav-item">
+        <a class="nav-link" href="page2.html"><button>2</button></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="page3.html"><button>3</button></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="page4.html"><button>4</button></a>
+      </li>
+    </ul>
+  </div>
+
+
+</div>
+</body>
+</html>
