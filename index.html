@@ -12,36 +12,66 @@
 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
 <script src='https://d3js.org/d3.v5.min.js'></script>
-<style> circle {fill: lightblue; stroke: black;} </style>
-<title>Working Title</title>
 <body onload='init()'>
     
     <div class="container">
         <h1>Metal Music</h1>
-        <small>Dataset found on <a target="_blank" href="https://www.kaggle.com/mrpantherson/metal-by-nation/">Kaggle</a></small>
+
+        <p>Have you ever wondered how many metal bands there are in the world? Or perhaps how many metal fans there are? or even how many metal generes exist? 
+          Yeah, I didn't think so. But these are the questions I have, and they'll be the focal point of this visualization. 
+        </p>
+
+        <p>Before we begin, here's some <a target="_blank" href="https://www.youtube.com/watch?v=c8qrwON1-zE">backgroud</a> music to put you in the correct mindset.</p>
+
+        <p>This Dataset (<small>found on <a target="_blank" href="https://www.kaggle.com/mrpantherson/metal-by-nation/">Kaggle</a></small>) provides information about the bands country of origin, formation date, fan base, and genere.</p> 
         
-        <p>This dataset will explore a metal music data set....</p>
+        <p>The first question to answer is, who was the first metal band? According to this data set it was Alice Cooper. Formed in 1964 from the Phoenix, Arizona U.S, Alice Cooper (Band) has a decade long run together before beaking up in 1975.</p>
     
+        <p>So was did Alice Cooper start a brand new wave of music? Sort of. Populatrity of metal music was rather minimal in the in the 70's and 80's, but started picking up steam towards the 90's, and peaked in 2005 where the world saw 270 new metal bands emerging.</p>
 
-        <svg width=300 height=300> </svg>
-    
-
-
-
+        <svg width=800 height=800> </svg>
 <script>
 async function init() {
 
-    var data = await d3.csv("data/page1.csv")
-    
-    console.log(data)
+    var data = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/page1.csv")
+        
+    var width = 800;
+    var height = 800;
+    var margin = 50;
+
+    var x = d3.scaleLinear().domain([1965, 2015]).range([0, width]);
+    var y = d3.scaleLinear().domain([0, 270]).range([height,0]);
+
+    var valueline = d3.line()
+    .x(function(d) { return x(d.year); })
+    .y(function(d) { return y(d.bandsFormed); });
+  
+    var chart = d3.select("svg");
+  
+    chart.attr("width",width + 2*margin)
+        .attr("height",height + 2*margin)
+        .append("g")
+            .attr("transform","translate("+margin+ ","+margin+")")
+        .selectAll("path")
+        .data([data])
+        .enter().append("path")
+        .attr("class", "line")
+        .attr("d", valueline);
+        
+  
+    d3.select("svg").append("g").attr("transform","translate("+margin+","+margin+")").call(d3.axisLeft(y));
+
+    d3.select("svg").append("g").attr("transform", "translate("+margin+","+(height+margin)+")").call(d3.axisBottom(x).tickFormat(d3.format("d")));
+
 }
 </script>
+
+<p>With all of these metal bands forming each yeah, it does beg the question, which county is the most metal?</p>
 
   <div class="pageFooter">
     <ul class="nav">
       <li class="nav-item">
         <a class="nav-link" href="page2.html"><button>2</button></a>
-      </li>
       <li class="nav-item">
         <a class="nav-link" href="page3.html"><button>3</button></a>
       </li>
