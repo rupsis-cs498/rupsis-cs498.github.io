@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="style.css">
+        <title>Metal Maelstrom</title>
+    </head>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+<style> circle {fill: lightblue; stroke: black;} </style>
+<body onload='init()'>
+    <div class="container">
+  <h1>Which County produces the most metal bands?</h1>
+
+ <p>Now that we seen how metal has grown in popularity over the years, it's time to see which countries produce the most metal bands.</p>
+
+ <p>Unsurprisingly, the USA is the largest producer of metal bands, with Sweden coming in second.</p>
+   
+   
+        <svg width=800 height=1000> </svg>
+    
+        <script>
+          async function init() {
+          
+              var data = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/page2.csv")
+                
+              var width = 1000;
+              var height = 600;
+              var margin = 50;
+            
+            var toolTip = d3.select("body").append("div")	
+            .attr("class", "tooltip")				
+            .style("opacity", 0);
+          
+              var x = d3.scaleLinear().range([0, width]);
+          
+              var y = d3.scaleLinear().domain([0, 1143]).range([height,0]);
+          
+              var chart = d3.select("svg");
+          
+              chart.attr("width",width + 2*margin)
+                  .attr("height",height + 2*margin)
+                  .append("g")
+                      .attr("transform","translate("+margin+ ","+margin+")")
+                  .selectAll("rect")
+                  .data(data)
+                  .enter().append("rect")
+                  .attr("x",function(d, i) { return i * 12; })
+                  .attr("y",function(d) { return y(d.numberOfBands); })
+                  .attr("width", 11)
+                  .attr("height",function(d) {  return height - y(d.numberOfBands); }).on("mouseover", function(d) {		
+                    toolTip.transition()		
+                    .duration(200)		
+                    .style("opacity", .9);		
+                  toolTip.html(d.country + ", "  + d.numberOfBands)	
+                  .style("left", (d3.event.pageX) + "px")		
+                  .style("top", (d3.event.pageY - 28) + "px");	
+              })					
+        .on("mouseout", function(d) {		
+            toolTip.transition()		
+                .duration(500)		
+                .style("opacity", 0);	
+        });
+              ;
+          
+              d3.select("svg").append("g").attr("transform","translate("+margin+","+margin+")").call(d3.axisLeft(y));
+          
+              d3.select("svg").append("g").attr("transform", "translate("+margin+","+(height+margin)+")").call(d3.axisBottom(x).tickFormat(function(d) { return d.country }));
+          
+          }
+          </script>
+
+<p>So with all of theses bands, which metal genre is the most common?</p>
+
+<div class="pageFooter">
+    <ul class="nav">
+      <li class="nav-item">
+        <a class="nav-link" href="index.html"><button>1</button></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="page3.html"><button>3</button></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="page4.html"><button>4</button></a>
+      </li>
+    </ul>
+  </div>
+
+  </div>
+</body>
+</html>
