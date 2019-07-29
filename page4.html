@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="style.css">
+        <title>Metal Maelstrom</title>
+    </head>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+<script src='d3-annotation.js'></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="crossorigin="anonymous"></script>
+<body onload='init()'>
+    <div class="container">
+  <h1>Additional insights?</h1>
+
+  <p>Are there any other insights to be obtained from this data set? I'm sure there are, but I'll leave that as an exercise for the reader.</p>
+  <p>Some questions I have are: </p>
+  <ul>
+    <li>Does Population affect the amount of metal bands for a country?</li>
+    <li>What are the top bands per genre?</li>
+    <li>Is there a correlation between the country and the genre?</li>
+  </ul>
+  <p>Below are some additional charts for exploration. Happy head banging 🤘</p>
+
+  <div class="row">
+    <div class="col-lg-6"><svg width=400 height=400 class="country"> </svg> </div>
+    <div class="col-lg-6"><svg width=400 height=400 class="year"> </svg></div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6"><svg width=400 height=400 class="genre"> </svg> </div>
+    <div class="col-lg-6"><svg width=400 height=400 class="bands"> </svg></div>
+  </div>
+
+    
+  <h1>Raw Data</h1>
+  <div id="rawData">
+  <table class="table" id="bandData">
+    <thead>
+      <tr>
+        <th scope="col">band_name</th>
+        <th scope="col">fans</th>
+        <th scope="col">formed</th>
+        <th scope="col">origin</th>
+        <th scope="col">split</th>
+        <th scope="col">style</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</div>
+  
+
+  <script>
+    async function init() {
+  
+      // countries
+        var data = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/page2.csv")
+          
+        var width = 500;
+        var height = 400;
+        var margin = 50;
+      
+      var toolTip = d3.select("body").append("div")	
+      .attr("class", "tooltip")				
+      .style("opacity", 0);
+    
+        var x = d3.scaleLinear().range([0, width]);
+    
+        var y = d3.scaleLinear().domain([0, 1143]).range([height,0]);
+    
+        var countryChart = d3.select(".country");
+    
+        countryChart.attr("width",width + 2*margin)
+            .attr("height",height + 2*margin)
+            .append("g")
+                .attr("transform","translate("+margin+ ","+margin+")")
+            .selectAll("rect")
+            .data(data)
+            .enter().append("rect")
+            .attr("x",function(d, i) { return i * 6; })
+            .attr("y",function(d) { return y(d.numberOfBands); })
+            .attr("width", 5)
+            .attr("height",function(d) {  return height - y(d.numberOfBands); }).on("mouseover", function(d) {		
+              toolTip.transition()		
+              .duration(200)		
+              .style("opacity", .9);		
+            toolTip.html(d.country + ", "  + d.numberOfBands)	
+            .style("left", (d3.event.pageX) + "px")		
+            .style("top", (d3.event.pageY - 28) + "px");	
+        })					
+  .on("mouseout", function(d) {		
+      toolTip.transition()		
+          .duration(500)		
+          .style("opacity", 0);	
+  });
+       
+        d3.select("svg").append("g").attr("transform","translate("+margin+","+margin+")").call(d3.axisLeft(y));
+        d3.select("svg").append("g").attr("transform", "translate("+margin+","+(height+margin)+")").call(d3.axisBottom(x).tickFormat(function(d) { return d.country }));
+    
+      
+//  year  
+      var yearData = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/page1.csv")
+
+var worldPop = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/world_population_1960_2015.csv")
+
+console.log(worldPop)
+
+var width = 400;
+var height = 400;
+var margin = 50;
+
+var x = d3.scaleLinear().domain([1965, 2015]).range([0, width]);
+var y = d3.scaleLinear().domain([0, 270]).range([height,0]);
+
+var valueline = d3.line()
+.x(function(d) { return x(d.year); })
+.y(function(d) { return y(d.bandsFormed); });
+
+var yearChart = d3.select(".year");
+
+yearChart.attr("width",width + 2*margin)
+  .attr("height",height + 2*margin)
+  .append("g")
+      .attr("transform","translate("+margin+ ","+margin+")")
+  .selectAll("path")
+  .data([yearData])
+  .enter().append("path")
+  .attr("class", "line")
+  .attr("d", valueline);
+  
+
+d3.select(".year").append("g").attr("transform","translate("+margin+","+margin+")").call(d3.axisLeft(y));
+
+d3.select(".year").append("g").attr("transform", "translate("+margin+","+(height+margin)+")").call(d3.axisBottom(x).tickFormat(d3.format("d")));
+
+
+// genre
+  
+var data = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/page3.csv")
+              
+              var height = 400;
+             var width = 400;
+                     
+             var genre = data.map((d) => d.genre);
+             var values = data.map((d) =>  d.count.trim() * 1);
+            
+             var pie = d3.pie().sort(null).value(function(d) {return d.count; });
+             var arc = d3.arc().innerRadius(100).outerRadius(200);
+           
+         
+             var toolTip = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
+             
+             var genreChart = d3.select(".genre").append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+         
+             genreChart.selectAll("path")
+                  .data(pie(data))
+                  .enter()
+                  .append("path").attr("d", arc)
+                  .attr("fill", function(d, i) {return `rgb(${3 + (3 * i)}, ${133 - (3* i)}, ${255 - i})` }).on("mouseover", function(d) {		
+                         toolTip.transition()		
+                             .duration(200)		
+                             .style("opacity", .9);		
+                           toolTip.html(d.data.genre + ', ' + d.data.count)	
+                           .style("left", (d3.event.pageX) + "px")		
+                           .style("top", (d3.event.pageY - 28) + "px");	
+                       })					
+                 .on("mouseout", function(d) {		
+                     toolTip.transition()		
+                         .duration(500)		
+                         .style("opacity", 0);	
+                 });        
+
+
+// bands
+var data = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/page2.csv")
+                
+                var width = 400;
+                var height = 400;
+                var margin = 50;
+              
+              var toolTip = d3.select("body").append("div")	
+              .attr("class", "tooltip")				
+              .style("opacity", 0);
+            
+                var x = d3.scaleLinear().range([0, width]);
+            
+                var y = d3.scaleLinear().domain([0, 1143]).range([height,0]);
+            
+                var bandChart = d3.select(".bands");
+            
+                bandChart.attr("width",width + 2*margin)
+                    .attr("height",height + 2*margin)
+                    .append("g")
+                        .attr("transform","translate("+margin+ ","+margin+")")
+                    .selectAll("rect")
+                    .data(data)
+                    .enter().append("rect")
+                    .attr("x",function(d, i) { return i * 12; })
+                    .attr("y",function(d) { return y(d.numberOfBands); })
+                    .attr("width", 11)
+                    .attr("height",function(d) {  return height - y(d.numberOfBands); }).on("mouseover", function(d) {		
+                      toolTip.transition()		
+                      .duration(200)		
+                      .style("opacity", .9);		
+                    toolTip.html(d.country + ", "  + d.numberOfBands)	
+                    .style("left", (d3.event.pageX) + "px")		
+                    .style("top", (d3.event.pageY - 28) + "px");	
+                })					
+          .on("mouseout", function(d) {		
+              toolTip.transition()		
+                  .duration(500)		
+                  .style("opacity", 0);	
+          });
+                ;
+            
+                d3.select(".bands").append("g").attr("transform","translate("+margin+","+margin+")").call(d3.axisLeft(y));
+            
+                d3.select(".bands").append("g").attr("transform", "translate("+margin+","+(height+margin)+")").call(d3.axisBottom(x).tickFormat(function(d) { return d.country }));
+            
+
+        var bandData = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/metal_bands_2017.csv");
+
+        var table = document.getElementById('bandData').getElementsByTagName('tbody')[0];
+
+        function add_row(data){
+          console.log(data);
+          var table =document.getElementById('bandData').insertRow(1);
+          table.insertCell(0).innerHTML=data.band_name; 
+          table.insertCell(1).innerHTML=data.fans; 
+          table.insertCell(2).innerHTML=data.formed; 
+          table.insertCell(3).innerHTML=data.origin; 
+          table.insertCell(4).innerHTML=data.split; 
+          table.insertCell(5).innerHTML=data.style; 
+        }
+
+        bandData.map(function(data) {
+          add_row(data);
+        });
+
+       
+        // Insert a row in the table at the last row
+
+
+// Insert a cell in the row at index 0
+
+
+// Append a text node to the cell
+var newText  = document.createTextNode('New row');
+newCell.appendChild(newText);
+
+    }
+    </script>
+<div class="pageFooter">
+    <ul class="nav">
+      <li class="nav-item">
+        <a class="nav-link active" href="index.html"><button>1</button></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="page2.html"><button>2</button></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="page3.html"><button>3</button></a>
+      </li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>
