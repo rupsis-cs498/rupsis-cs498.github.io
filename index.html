@@ -18,23 +18,28 @@
     <div class="container">
         <h1>Metal Music</h1>
 
-        <p>Have you ever wondered how many metal bands there are in the world? Or perhaps how many metal fans there are? or even how many metal generes exist? 
+        <p>Have you ever wondered how many metal bands there are in the world? Or perhaps how many metal fans there are? or even how many metal genres exist? 
           Yeah, I didn't think so. But these are the questions I have, and they'll be the focal point of this visualization. 
         </p>
 
         <p>Before we begin, here's some <a target="_blank" href="https://www.youtube.com/watch?v=c8qrwON1-zE">backgroud</a> music to put you in the correct mindset.</p>
 
-        <p>This Dataset (<small>found on <a target="_blank" href="https://www.kaggle.com/mrpantherson/metal-by-nation/">Kaggle</a></small>) provides information about the bands country of origin, formation date, fan base, and genere.</p> 
+        <p>This Dataset (<small>found on <a target="_blank" href="https://www.kaggle.com/mrpantherson/metal-by-nation/">Kaggle</a></small>) provides information about the bands country of origin, formation date, fan base, and genre.</p> 
         
         <p>The first question to answer is, who was the first metal band? According to this data set it was Alice Cooper. Formed in 1964 from the Phoenix, Arizona U.S, Alice Cooper (Band) has a decade long run together before beaking up in 1975.</p>
     
-        <p>So was did Alice Cooper start a brand new wave of music? Sort of. Populatrity of metal music was rather minimal in the in the 70's and 80's, but started picking up steam towards the 90's, and peaked in 2005 where the world saw 270 new metal bands emerging.</p>
+        <p>So did Alice Cooper start a brand new wave of music? Sort of. Populatrity of metal music was rather minimal in the 70's and 80's, but started picking up steam towards the 90's, and peaked in 2005 where the world saw 270 new metal bands emerging.</p>
 
         <svg width=800 height=800> </svg>
 <script>
+
 async function init() {
 
     var data = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/page1.csv")
+
+    var toolTip = d3.select("body").append("div")	
+            .attr("class", "tooltip")				
+            .style("opacity", 0);
         
     var width = 800;
     var height = 800;
@@ -61,8 +66,28 @@ async function init() {
         
   
     d3.select("svg").append("g").attr("transform","translate("+margin+","+margin+")").call(d3.axisLeft(y));
+    chart.append("text").attr("transform", "rotate(-90)").attr("y", `${margin - 40}`).attr("x", `${-height / 2}`).style("text-anchor", "middle").text("Number of Bands");
 
     d3.select("svg").append("g").attr("transform", "translate("+margin+","+(height+margin)+")").call(d3.axisBottom(x).tickFormat(d3.format("d")));
+    chart.append("text").attr("transform","translate(" + (width/2) + " ," + (height + margin + 40) + ")").style("text-anchor", "middle").text("Year");
+
+    chart.selectAll(".dot")
+    .data(data).enter().append("circle").attr("class", "point") 
+    .attr("transform","translate("+margin+ ","+margin+")")
+    .attr("cx", function(d) {  return x(d.year); })
+    .attr("cy", function(d) { return y(d.bandsFormed); })
+    .attr("r", 5).on("mouseover", function(d) {		
+          toolTip.transition()		
+            .duration(200)		
+            .style("opacity", .9);		
+          toolTip.html(d.year + ", "  + d.bandsFormed)	
+            .style("left", (d3.event.pageX) + "px")		
+            .style("top", (d3.event.pageY - 28) + "px");	
+        }).on("mouseout", function(d) {		
+            toolTip.transition()		
+              .duration(500)		
+            .style("opacity", 0);	
+        });
 
 
     const annotations = [ {

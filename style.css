@@ -59,3 +59,12 @@ td {
 .annotation-note-content{
   padding: 5px;
 }
+
+.annotation-note-label{
+  margin: 5px;
+}
+
+.point  {
+  fill: red;
+  stroke: white;
+}

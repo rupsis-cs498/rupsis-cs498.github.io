@@ -15,9 +15,9 @@
 <script src='d3-annotation.js'></script>
 <body onload='init()'>
     <div class="container">
-  <h1>Which County produces the most metal bands?</h1>
+  <h1>Which Country produces the most metal bands?</h1>
 
- <p>Now that we seen how metal has grown in popularity over the years, it's time to see which countries produce the most metal bands.</p>
+ <p>Now that we've seen how metal has grown in popularity over the years, it's time to see which countries produce the most metal bands.</p>
 
  <p>Unsurprisingly, the USA is the largest producer of metal bands, with Sweden coming in second.</p>
    
@@ -45,8 +45,7 @@
           
               chart.attr("width",width + 2*margin)
                   .attr("height",height + 2*margin)
-                  .append("g")
-                      .attr("transform","translate("+margin+ ","+margin+")")
+                  .append("g").attr("transform","translate("+margin+ ","+margin+")")
                   .selectAll("rect")
                   .data(data)
                   .enter().append("rect")
@@ -55,22 +54,22 @@
                   .attr("width", 11)
                   .attr("height",function(d) {  return height - y(d.numberOfBands); }).on("mouseover", function(d) {		
                     toolTip.transition()		
-                    .duration(200)		
-                    .style("opacity", .9);		
-                  toolTip.html(d.country + ", "  + d.numberOfBands)	
-                  .style("left", (d3.event.pageX) + "px")		
-                  .style("top", (d3.event.pageY - 28) + "px");	
-              })					
-        .on("mouseout", function(d) {		
-            toolTip.transition()		
-                .duration(500)		
-                .style("opacity", 0);	
-        });
-              ;
-          
+                      .duration(200)		
+                      .style("opacity", .9);		
+                    toolTip.html(d.country + ", "  + d.numberOfBands)	
+                      .style("left", (d3.event.pageX) + "px")		
+                      .style("top", (d3.event.pageY - 28) + "px");	
+                  }).on("mouseout", function(d) {		
+                      toolTip.transition()		
+                       .duration(500)		
+                      .style("opacity", 0);	
+                  });
+             
               d3.select("svg").append("g").attr("transform","translate("+margin+","+margin+")").call(d3.axisLeft(y));
+              chart.append("text").attr("transform", "rotate(-90)").attr("y", `${margin - 40}`).attr("x", `${-height / 2}`).style("text-anchor", "middle").text("Number of Bands");
           
               d3.select("svg").append("g").attr("transform", "translate("+margin+","+(height+margin)+")").call(d3.axisBottom(x).tickFormat(function(d) { return d.country }));
+              chart.append("text").attr("transform","translate(" + (width/2) + " ," + (height + margin + 40) + ")").style("text-anchor", "middle").text("country");
           
           }
           </script>

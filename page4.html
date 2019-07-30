@@ -19,13 +19,8 @@
   <h1>Additional insights?</h1>
 
   <p>Are there any other insights to be obtained from this data set? I'm sure there are, but I'll leave that as an exercise for the reader.</p>
-  <p>Some questions I have are: </p>
-  <ul>
-    <li>Does Population affect the amount of metal bands for a country?</li>
-    <li>What are the top bands per genre?</li>
-    <li>Is there a correlation between the country and the genre?</li>
-  </ul>
-  <p>Below are some additional charts for exploration. Happy head banging 🤘</p>
+
+  <p>Below is some additional information for exploration. Does population play a role? Number of fans have any bearing on genre? Who knows. Happy head banging 🤘</p>
 
   <div class="row">
     <div class="col-lg-6"><svg width=400 height=400 class="population"> </svg> </div>
@@ -33,8 +28,8 @@
   </div>
 
   <div class="row">
-    <div class="col-lg-6"><svg width=400 height=400 class="genre"> </svg> </div>
-    <div class="col-lg-6"><svg width=400 height=400 class="bands"> </svg></div>
+    <div class="col-lg-5"><svg width=400 height=400 class="genre"> </svg> </div>
+    <div class="col-lg-7"><svg width=400 height=400 class="country"> </svg></div>
   </div>
 
     
@@ -59,26 +54,20 @@
 
   <script>
     async function init() {
-  
       // world population
-
       var worldPop = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/world_population.csv");
-
-      console.log(worldPop);
-
       var width = 400;
       var height = 400;
       var margin = 50;
 
       var x = d3.scaleLinear().domain([1965, 2015]).range([0, width]);
-      var y = d3.scaleLinear().domain([30786322073, 77836933571]).range([height,0]);
+      var y = d3.scaleLinear().domain([3035055570, 7346633037]).range([height,0]);
 
       var valueline = d3.line()
       .x(function(d) { return x(d.year); })
       .y(function(d) { return y(d.population); });
 
       var popChart = d3.select(".population");
-
       popChart.attr("width",width + 2*margin)
         .attr("height",height + 2*margin)
         .append("g")
@@ -90,44 +79,64 @@
         .attr("d", valueline);
   
 
-d3.select(".population").append("g").attr("transform","translate("+margin+","+margin+")").call(d3.axisLeft(y).tickFormat(d3.format(".2s")));
+    d3.select(".population").append("g").attr("transform","translate("+margin+","+margin+")").call(d3.axisLeft(y).tickFormat(d3.format(".2s")));
+    popChart.append("text").attr("transform", "rotate(-90)").attr("y", `${margin - 40}`).attr("x", `${-height / 2}`).style("text-anchor", "middle").text("Population");
+    d3.select(".population").append("g").attr("transform", "translate("+margin+","+(height+margin)+")").call(d3.axisBottom(x).tickFormat(d3.format("d")));
+    popChart.append("text").attr("transform","translate(" + (width/2) + " ," + (height + margin + 40) + ")").style("text-anchor", "middle").text("Year");
 
-d3.select(".population").append("g").attr("transform", "translate("+margin+","+(height+margin)+")").call(d3.axisBottom(x).tickFormat(d3.format("d")));
       
 //  year  
       var yearData = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/page1.csv")
+      
+      var yearToolTip = d3.select("body").append("div")	
+            .attr("class", "tooltip")				
+            .style("opacity", 0);
+        
+      var width = 400;
+      var height = 400;
+      var margin = 50;
 
-var worldPop = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/world_population_1960_2015.csv")
+      var x = d3.scaleLinear().domain([1965, 2015]).range([0, width]);
+      var y = d3.scaleLinear().domain([0, 270]).range([height,0]);
 
-console.log(worldPop);
-
-var width = 400;
-var height = 400;
-var margin = 50;
-
-var x = d3.scaleLinear().domain([1965, 2015]).range([0, width]);
-var y = d3.scaleLinear().domain([0, 270]).range([height,0]);
-
-var valueline = d3.line()
-.x(function(d) { return x(d.year); })
-.y(function(d) { return y(d.bandsFormed); });
-
-var yearChart = d3.select(".year");
-
-yearChart.attr("width",width + 2*margin)
-  .attr("height",height + 2*margin)
-  .append("g")
+      var valueline = d3.line()
+      .x(function(d) { return x(d.year); })
+      .y(function(d) { return y(d.bandsFormed); });
+    
+      var yearChart = d3.select(".year");
+    
+      yearChart.attr("width",width + 2*margin)
+          .attr("height",height + 2*margin)
+          .append("g")
+              .attr("transform","translate("+margin+ ","+margin+")")
+          .selectAll("path")
+          .data([yearData])
+          .enter().append("path")
+          .attr("class", "line")
+          .attr("d", valueline);
+        
+      yearChart.selectAll(".dot")
+      .data(yearData).enter().append("circle").attr("class", "point") 
       .attr("transform","translate("+margin+ ","+margin+")")
-  .selectAll("path")
-  .data([yearData])
-  .enter().append("path")
-  .attr("class", "line")
-  .attr("d", valueline);
+      .attr("cx", function(d) {  return x(d.year); })
+      .attr("cy", function(d) { return y(d.bandsFormed); })
+      .attr("r", 5).on("mouseover", function(d) {		
+            toolTip.transition()		
+              .duration(200)		
+              .style("opacity", .9);		
+            toolTip.html(d.year + ", "  + d.bandsFormed)	
+              .style("left", (d3.event.pageX) + "px")		
+              .style("top", (d3.event.pageY - 28) + "px");	
+          }).on("mouseout", function(d) {		
+              toolTip.transition()		
+                .duration(500)		
+              .style("opacity", 0);	
+          });
   
-
-d3.select(".year").append("g").attr("transform","translate("+margin+","+margin+")").call(d3.axisLeft(y));
-
-d3.select(".year").append("g").attr("transform", "translate("+margin+","+(height+margin)+")").call(d3.axisBottom(x).tickFormat(d3.format("d")));
+      d3.select(".year").append("g").attr("transform","translate("+margin+","+margin+")").call(d3.axisLeft(y));
+      yearChart.append("text").attr("transform", "rotate(-90)").attr("y", `${margin - 40}`).attr("x", `${-height / 2}`).style("text-anchor", "middle").text("Number of Bands");
+      d3.select(".year").append("g").attr("transform", "translate("+margin+","+(height+margin)+")").call(d3.axisBottom(x).tickFormat(d3.format("d")));
+      yearChart.append("text").attr("transform","translate(" + (width/2) + " ," + (height + margin + 40) + ")").style("text-anchor", "middle").text("Year");
 
 
 // genre
@@ -167,51 +176,50 @@ var data = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-c
                  });        
 
 
-// bands
-var data = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/page2.csv")
+      // country
+        var countryData = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/page2.csv")
                 
-                var width = 400;
-                var height = 400;
-                var margin = 50;
-              
-              var toolTip = d3.select("body").append("div")	
-              .attr("class", "tooltip")				
-              .style("opacity", 0);
+              var width = 600;
+              var height = 300;
+              var margin = 50;
             
-                var x = d3.scaleLinear().range([0, width]);
-            
-                var y = d3.scaleLinear().domain([0, 1143]).range([height,0]);
-            
-                var bandChart = d3.select(".bands");
-            
-                bandChart.attr("width",width + 2*margin)
-                    .attr("height",height + 2*margin)
-                    .append("g")
-                        .attr("transform","translate("+margin+ ","+margin+")")
-                    .selectAll("rect")
-                    .data(data)
-                    .enter().append("rect")
-                    .attr("x",function(d, i) { return i * 12; })
-                    .attr("y",function(d) { return y(d.numberOfBands); })
-                    .attr("width", 11)
-                    .attr("height",function(d) {  return height - y(d.numberOfBands); }).on("mouseover", function(d) {		
-                      toolTip.transition()		
+            var countryToolTip = d3.select("body").append("div")	
+            .attr("class", "tooltip")				
+            .style("opacity", 0);
+          
+              var x = d3.scaleLinear().range([0, width]);
+              var y = d3.scaleLinear().domain([0, 1143]).range([height,0]);
+          
+              var countryChart = d3.select(".country");
+          
+              countryChart.attr("width",width + 2*margin)
+                  .attr("height",height + 2*margin)
+                  .append("g").attr("transform","translate("+margin+ ","+margin+")")
+                  .selectAll("rect")
+                  .data(countryData)
+                  .enter().append("rect")
+                  .attr("x",function(d, i) { return i * 7; })
+                  .attr("y",function(d) { return y(d.numberOfBands); })
+                  .attr("width", 8)
+                  .attr("height",function(d) {  return height - y(d.numberOfBands); }).on("mouseover", function(d) {		
+                    toolTip.transition()		
                       .duration(200)		
                       .style("opacity", .9);		
                     toolTip.html(d.country + ", "  + d.numberOfBands)	
-                    .style("left", (d3.event.pageX) + "px")		
-                    .style("top", (d3.event.pageY - 28) + "px");	
-                })					
-          .on("mouseout", function(d) {		
-              toolTip.transition()		
-                  .duration(500)		
-                  .style("opacity", 0);	
-          });
-     
-            
-                d3.select(".bands").append("g").attr("transform","translate("+margin+","+margin+")").call(d3.axisLeft(y));
-            
-                d3.select(".bands").append("g").attr("transform", "translate("+margin+","+(height+margin)+")").call(d3.axisBottom(x).tickFormat(function(d) { return d.country }));
+                      .style("left", (d3.event.pageX) + "px")		
+                      .style("top", (d3.event.pageY - 28) + "px");	
+                  }).on("mouseout", function(d) {		
+                      toolTip.transition()		
+                       .duration(500)		
+                      .style("opacity", 0);	
+                  });
+             
+              d3.select(".country").append("g").attr("transform","translate("+margin+","+margin+")").call(d3.axisLeft(y));
+              countryChart.append("text").attr("transform", "rotate(-90)").attr("y", `${margin - 40}`).attr("x", `${-height / 2}`).style("text-anchor", "middle").text("Number of Bands");
+          
+              d3.select(".country").append("g").attr("transform", "translate("+margin+","+(height+margin)+")").call(d3.axisBottom(x).tickFormat(function(d) { return d.country }));
+              countryChart.append("text").attr("transform","translate(" + (width/2) + " ," + (height + margin + 40) + ")").style("text-anchor", "middle").text("country");
+          
             
 
         var bandData = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/metal_bands_2017.csv");
