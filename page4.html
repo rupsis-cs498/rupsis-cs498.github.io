@@ -28,7 +28,7 @@
   <p>Below are some additional charts for exploration. Happy head banging 🤘</p>
 
   <div class="row">
-    <div class="col-lg-6"><svg width=400 height=400 class="country"> </svg> </div>
+    <div class="col-lg-6"><svg width=400 height=400 class="population"> </svg> </div>
     <div class="col-lg-6"><svg width=400 height=400 class="year"> </svg></div>
   </div>
 
@@ -60,57 +60,46 @@
   <script>
     async function init() {
   
-      // countries
-        var data = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/page2.csv")
-          
-        var width = 500;
-        var height = 400;
-        var margin = 50;
-      
-      var toolTip = d3.select("body").append("div")	
-      .attr("class", "tooltip")				
-      .style("opacity", 0);
-    
-        var x = d3.scaleLinear().range([0, width]);
-    
-        var y = d3.scaleLinear().domain([0, 1143]).range([height,0]);
-    
-        var countryChart = d3.select(".country");
-    
-        countryChart.attr("width",width + 2*margin)
-            .attr("height",height + 2*margin)
-            .append("g")
-                .attr("transform","translate("+margin+ ","+margin+")")
-            .selectAll("rect")
-            .data(data)
-            .enter().append("rect")
-            .attr("x",function(d, i) { return i * 6; })
-            .attr("y",function(d) { return y(d.numberOfBands); })
-            .attr("width", 5)
-            .attr("height",function(d) {  return height - y(d.numberOfBands); }).on("mouseover", function(d) {		
-              toolTip.transition()		
-              .duration(200)		
-              .style("opacity", .9);		
-            toolTip.html(d.country + ", "  + d.numberOfBands)	
-            .style("left", (d3.event.pageX) + "px")		
-            .style("top", (d3.event.pageY - 28) + "px");	
-        })					
-  .on("mouseout", function(d) {		
-      toolTip.transition()		
-          .duration(500)		
-          .style("opacity", 0);	
-  });
-       
-        d3.select("svg").append("g").attr("transform","translate("+margin+","+margin+")").call(d3.axisLeft(y));
-        d3.select("svg").append("g").attr("transform", "translate("+margin+","+(height+margin)+")").call(d3.axisBottom(x).tickFormat(function(d) { return d.country }));
-    
+      // world population
+
+      var worldPop = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/world_population.csv");
+
+      console.log(worldPop);
+
+      var width = 400;
+      var height = 400;
+      var margin = 50;
+
+      var x = d3.scaleLinear().domain([1965, 2015]).range([0, width]);
+      var y = d3.scaleLinear().domain([30786322073, 77836933571]).range([height,0]);
+
+      var valueline = d3.line()
+      .x(function(d) { return x(d.year); })
+      .y(function(d) { return y(d.population); });
+
+      var popChart = d3.select(".population");
+
+      popChart.attr("width",width + 2*margin)
+        .attr("height",height + 2*margin)
+        .append("g")
+            .attr("transform","translate("+margin+ ","+margin+")")
+        .selectAll("path")
+        .data([worldPop])
+        .enter().append("path")
+        .attr("class", "line")
+        .attr("d", valueline);
+  
+
+d3.select(".population").append("g").attr("transform","translate("+margin+","+margin+")").call(d3.axisLeft(y).tickFormat(d3.format(".2s")));
+
+d3.select(".population").append("g").attr("transform", "translate("+margin+","+(height+margin)+")").call(d3.axisBottom(x).tickFormat(d3.format("d")));
       
 //  year  
       var yearData = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/page1.csv")
 
 var worldPop = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-cs498.github.io/master/data/world_population_1960_2015.csv")
 
-console.log(worldPop)
+console.log(worldPop);
 
 var width = 400;
 var height = 400;
@@ -218,7 +207,7 @@ var data = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-c
                   .duration(500)		
                   .style("opacity", 0);	
           });
-                ;
+     
             
                 d3.select(".bands").append("g").attr("transform","translate("+margin+","+margin+")").call(d3.axisLeft(y));
             
@@ -230,7 +219,6 @@ var data = await d3.csv("https://raw.githubusercontent.com/rupsis-cs498/rupsis-c
         var table = document.getElementById('bandData').getElementsByTagName('tbody')[0];
 
         function add_row(data){
-          console.log(data);
           var table =document.getElementById('bandData').insertRow(1);
           table.insertCell(0).innerHTML=data.band_name; 
           table.insertCell(1).innerHTML=data.fans; 

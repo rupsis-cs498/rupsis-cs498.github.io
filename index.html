@@ -64,6 +64,31 @@ async function init() {
 
     d3.select("svg").append("g").attr("transform", "translate("+margin+","+(height+margin)+")").call(d3.axisBottom(x).tickFormat(d3.format("d")));
 
+
+    const annotations = [ {
+        type: d3.annotationCalloutCircle,
+          note: {
+            label: "When Metal really took off.",
+            wrap: 190
+          },
+          subject: {
+            radius: 50
+          },
+          x: 600,
+          y: 300,
+          dy: 0,
+          dx: -100
+        }].map(function(d){ d.color = "#E8336D"; return d})
+
+        const makeAnnotations = d3.annotation()
+          .type(d3.annotationLabel)
+          .annotations(annotations)
+
+        d3.select("svg")
+          .append("g")
+          .attr("class", "annotation")
+          .call(makeAnnotations)
+
 }
 </script>
 

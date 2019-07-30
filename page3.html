@@ -60,6 +60,28 @@
                 .duration(500)		
                 .style("opacity", 0);	
         });        
+
+        const type = d3.annotationLabel
+
+        const annotations = [ {
+          note: {
+            label: "Death Metal is by far the most popular genre."
+          },
+          x: 600,
+          y: 400,
+          dy: 0,
+          dx: -170
+        }].map(function(d){ d.color = "#E8336D"; return d})
+
+        const makeAnnotations = d3.annotation()
+          .type(d3.annotationLabel)
+          .annotations(annotations)
+
+        d3.select("svg")
+          .append("g")
+          .attr("class", "annotation")
+          .call(makeAnnotations)
+
   }
 </script>
 

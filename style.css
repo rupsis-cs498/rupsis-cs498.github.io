@@ -49,3 +49,13 @@ td {
   border: 1px black solid;
   padding: 5px;
 }
+
+.annotation{
+  background-color: rgb(200, 200, 200);
+  font-weight: bold;
+  
+}
+
+.annotation-note-content{
+  padding: 5px;
+}
